@@ -5,6 +5,7 @@ import axios from "axios";
 import { useStateContext } from "../contexts/ContextProvider";
 import CoinInfo from "../components/CoinInfo";
 import { chartDays } from "../api/data";
+import Loader from "../components/Loader";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -35,6 +36,7 @@ const CoinPage = () => {
   const [singleCoin, setSingleCoin] = useState([]);
   const [chart, setChart] = useState([]);
   const [days, setDays] = useState(1);
+  const [selected, setSelected] = useState("");
 
   useEffect(() => {
     async function fetchCoin() {
@@ -50,7 +52,23 @@ const CoinPage = () => {
     fetch();
   }, [currency, days]);
 
-  console.log(chart);
+  const selectedStyle = {
+    backgroundColor: "gold",
+    color: "black",
+    fontWeight: "bold",
+    border: "1px solid gold"
+  };
+  // "bg-yellow-400 text-black font-bold border border-yellow-400";
+
+  function handleActive(text) {
+    if (selected === text) {
+      return selectedStyle;
+    }
+  }
+
+  if (!singleCoin.length && !chart.length) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col  xl:flex-row items-center ">
@@ -85,23 +103,23 @@ const CoinPage = () => {
           />
         )}
         <div
-          style={{
-            display: "flex",
-            marginTop: 20,
-            justifyContent: "space-around",
-            width: "100%"
-          }}
+          className="w-full mt-5  flex gap-1 justify-center sm:gap-1 sm:justify-around"
+          // style={{
+          //   display: "flex",
+          //   marginTop: 20,
+          //   justifyContent: "space-around",
+          //   width: "100%"
+          // }}
         >
           {chartDays.map((day) => (
             <button
-              className="rounded-lg py-2 px-6 hover:text-black hover:font-bold border border-yellow-400 hover:bg-yellow-400 bg-transparent"
-              // style={({ isActive }) => ({
-              // backgroundColor: "transparent",
-              // padding: "1rem"
-              // })}
+              style={handleActive(day.label)}
+              className={`rounded-lg  sm:py-2 p-1 whitespace-nowrap sm:px-6  
+                border text-[12px] sm:text-lg border-yellow-400 bg-transparent `}
               key={day.value}
-              onClick={() => {
+              onClick={(e) => {
                 setDays(day.value);
+                setSelected(e.target.textContent);
               }}
               // selected={day.value === days}
             >
